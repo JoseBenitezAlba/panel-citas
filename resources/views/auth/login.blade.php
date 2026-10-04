@@ -1,13 +1,4 @@
 @extends('layouts.app')
-@section('title', 'Entrar')
-@section('content')
-<div class="card" style="max-width:420px;margin:auto">
-    <h2>Entrar</h2>
-    <form method="post" action="{{ url('/login') }}">
-        @csrf
-        <label>Email <input type="email" name="email" value="{{ old('email') }}" required></label>
-        <label>Contraseña <input type="password" name="password" required></label>
-        <button class="btn">Entrar</button>
-    </form>
-</div>
-@endsection
+@section('title','Iniciar sesión')
+@section('content')<div class="auth-page"><section class="auth-story"><a href="/" class="brand"><span class="brand-mark">▥</span><span>stockia<small>GESTIÓN DE COMERCIO</small></span></a><div><span class="eyebrow" style="color:#b6aeff">MENOS HOJAS DE CÁLCULO. MÁS CONTROL.</span><h1>Tu tienda.<br>Tus números.<br>Todo conectado.</h1><p>Un espacio para gestionar productos, registrar ventas y mantener el inventario al día.</p></div><small>Inventario · Ventas · Movimientos</small></section><section class="auth-form"><div class="auth-box"><span class="eyebrow">BIENVENIDO A STOCKIA</span><h1>Entra en tu espacio.</h1><p class="muted">Una visión clara de lo que pasa en tu negocio.</p>@if($errors->any())<div class="alert error" role="alert">{{ $errors->first() }}</div>@endif<form method="POST" action="{{ route('login') }}">@csrf<div class="field"><label for="email">Correo electrónico</label><input name="email" id="email" type="email" value="{{ old('email','admin@example.com') }}" autocomplete="username" required></div><div class="field"><label for="password">Contraseña</label><input name="password" id="password" type="password" value="password" autocomplete="current-password" required></div><button class="btn">Entrar al panel →</button></form><div class="demo-accounts"><p><strong>Prueba sin configurar nada</strong></p><p class="muted">Datos de ejemplo ya cargados. Contraseña: <code>password</code></p><div class="demo-buttons"><button type="button" class="btn secondary small" data-email="admin@example.com">Administrador</button><button type="button" class="btn secondary small" data-email="empleado@example.com">Empleado</button></div></div><p style="font-size:12px;text-align:center;color:var(--muted)">¿Quieres tu propia cuenta? <a href="{{ route('register') }}">Crear cuenta</a></p></div></section></div>@endsection
+@push('scripts')<script>document.querySelectorAll('[data-email]').forEach(b=>b.addEventListener('click',()=>{document.getElementById('email').value=b.dataset.email;document.getElementById('password').value='password'}))</script>@endpush

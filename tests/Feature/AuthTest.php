@@ -12,7 +12,7 @@ class AuthTest extends TestCase
 
     public function test_guest_is_redirected_to_login(): void
     {
-        $this->get('/citas')->assertRedirect('/login');
+        $this->get('/panel')->assertRedirect('/login');
     }
 
     public function test_user_can_register_with_default_role(): void
@@ -20,10 +20,10 @@ class AuthTest extends TestCase
         $this->post('/registro', [
             'name' => 'Ana', 'email' => 'ana@example.com',
             'password' => 'secreto123', 'password_confirmation' => 'secreto123',
-        ])->assertRedirect('/citas');
+        ])->assertRedirect('/panel');
 
         $this->assertAuthenticated();
-        $this->assertSame('user', User::first()->role);
+        $this->assertSame('empleado', User::first()->role);
     }
 
     public function test_registration_cannot_set_role(): void
@@ -33,14 +33,14 @@ class AuthTest extends TestCase
             'password' => 'secreto123', 'password_confirmation' => 'secreto123',
         ]);
 
-        $this->assertSame('user', User::first()->role);
+        $this->assertSame('empleado', User::first()->role);
     }
 
     public function test_login_and_logout(): void
     {
         User::factory()->create(['email' => 'ana@example.com', 'password' => 'secreto123']);
 
-        $this->post('/login', ['email' => 'ana@example.com', 'password' => 'secreto123'])->assertRedirect('/citas');
+        $this->post('/login', ['email' => 'ana@example.com', 'password' => 'secreto123'])->assertRedirect('/panel');
         $this->assertAuthenticated();
 
         $this->post('/logout')->assertRedirect('/login');

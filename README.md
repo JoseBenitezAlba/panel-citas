@@ -1,30 +1,38 @@
-# Panel de citas
+# Stockia
 
-![Tests](https://github.com/JoseBenitezAlba/panel-citas/actions/workflows/tests.yml/badge.svg)
-![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
-![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+Panel de inventario y ventas para pequeños comercios, construido con Laravel 13 y PHP 8.4. No es un sistema de reservas: gestiona referencias, existencias y ventas de una tienda.
 
-**Demo:** https://panel-citas-v9zx.onrender.com (administrador `admin@example.com`, cliente `cliente@example.com`, contraseña `password`). Está en el plan gratuito de Render: si lleva un rato sin usarse, la primera carga tarda cerca de un minuto. Los datos se reinician en cada arranque.
+![Panel de Stockia en escritorio](docs/screenshots/desktop.png)
 
-Aplicación web de gestión de citas hecha con **Laravel 13** y Blade. Los clientes piden y cancelan sus citas; los administradores gestionan servicios y estados y ven un dashboard con gráficas.
+## Qué puedes probar
 
-## Funcionalidades
+- Dashboard con ingresos del mes, referencias activas, valor de inventario y alertas de reposición.
+- Gráficas de ingresos diarios y unidades por categoría con Chart.js servido desde la propia aplicación.
+- Catálogo con búsqueda por nombre/SKU, filtro de categoría y filtro de stock bajo.
+- Alta de categorías y productos, precio en céntimos y SKU único.
+- Ventas con varias líneas: el servidor calcula el importe y descuenta existencias en una transacción. Una línea sin stock cancela la operación completa.
+- Registro de entradas, ajustes y salidas, con usuario y motivo. Nunca permite existencias negativas.
+- Administrador: catálogo, movimientos y ventas. Empleado: consulta y registro de ventas, sin modificar catálogo ni ajustar existencias.
+- Menú desplegable y fichas de datos en móvil, sin columnas cortadas ni scroll horizontal de página.
 
-- Registro, login y logout (autenticación de sesión de Laravel).
-- Dos roles: `user` y `admin`. El rol no se puede elegir al registrarse. Un middleware protege toda la zona `/admin`.
-- Clientes: ver sus citas, pedir una cita (servicio, fecha y hora) y cancelarla. No pueden ver ni cancelar las de otros.
-- Validaciones: la fecha debe ser futura y no se puede reservar una hora ya ocupada para el mismo servicio (las canceladas liberan el hueco).
-- Administración: CRUD básico de servicios (no se borra un servicio con citas), listado de todas las citas y cambio de estado (`pending`, `confirmed`, `cancelled`).
-- Dashboard con KPIs (citas totales, ingresos confirmados) y gráficas con Chart.js: citas por estado y por servicio.
-- 18 tests de feature y CI con GitHub Actions.
+## Demo
 
-## Puesta en marcha
+La demo se publica tras fusionar el PR de Stockia. La URL del despliegue existente se actualizará cuando se complete el cambio de nombre del servicio.
 
-Requisitos: PHP 8.3 o superior, Composer y SQLite.
+| Perfil | Correo | Contraseña |
+| --- | --- | --- |
+| Administrador | `admin@example.com` | `password` |
+| Empleado | `empleado@example.com` | `password` |
+
+Al entrar hay 12 productos, 3 categorías, ventas de los últimos 14 días y movimientos coherentes con las existencias. El seeder no duplica ventas ni restablece stock en cada arranque.
+
+Estas credenciales son exclusivamente de demostración. Las ventas son registros internos, no cobran dinero ni emiten facturas fiscales. No introduzcas datos personales reales en una demo pública.
+
+## Ejecución local
+
+Requisitos: PHP 8.4 con SQLite/PDO y Composer. Esta interfaz se sirve directamente desde `public/`, sin necesitar compilar assets.
 
 ```bash
-git clone https://github.com/JoseBenitezAlba/panel-citas.git
-cd panel-citas
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -33,29 +41,35 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-Usuarios de prueba que crea el seeder (solo para desarrollo local):
+La base de datos local usa SQLite. Para cargar datos de ejemplo en otra base de datos vacía: `php artisan db:seed`.
 
-| Rol | Email | Contraseña |
-|---|---|---|
-| admin | admin@example.com | password |
-| user | cliente@example.com | password |
-
-## Tests
+## Pruebas
 
 ```bash
 php artisan test
+vendor/bin/pint --test
 ```
 
-## Estructura
+La suite comprueba autenticación, permisos, render de las cuatro pantallas, filtros, estado vacío, precios del servidor, SKU único, venta con falta de stock y rollback, ajustes negativos y seeder idempotente. Las comprobaciones visuales se hicieron en Chrome con ventanas de 1440 px y 390 px, incluido el menú móvil, una venta con dos productos y un error de ajuste de stock.
 
-```
-app/Http/Controllers/            Auth y citas del cliente
-app/Http/Controllers/Admin/      dashboard, servicios y gestión de citas
-app/Http/Middleware/EnsureAdmin  control de acceso por rol
-resources/views/                 plantillas Blade
-tests/Feature/                   AuthTest, AppointmentTest, AdminTest
-```
+<details>
+<summary>Vista móvil</summary>
 
-## Autor
+![Panel móvil](docs/screenshots/mobile.png)
 
-José Manuel Benítez Alba, desarrollador web junior (PHP/Laravel), Cádiz. [GitHub](https://github.com/JoseBenitezAlba)
+</details>
+
+## Arquitectura y límites
+
+`Product` pertenece a `Category`; `Sale` guarda líneas con el precio de venta de ese momento. Cada cambio de existencias añade un `StockMovement`. Las rutas de administración están protegidas en servidor, no solo escondidas en la interfaz.
+
+- Importes almacenados como enteros en céntimos para evitar sumar floats.
+- Descuento de stock condicional dentro de una transacción para evitar vender existencias que ya no están disponibles.
+- Las migraciones históricas se conservan para permitir actualizar una instalación existente sin reescribir su historial. Las tablas antiguas no se usan ni exponen en la aplicación.
+- Demo pública y compartida: las cuentas no son un sistema de tiendas aisladas. Para un uso real hay que desactivar el registro público, cambiar credenciales, definir permisos de acceso y añadir copias de seguridad.
+- Render gratuito con SQLite en disco efímero: las modificaciones pueden perderse en un reinicio o redespliegue. Para producción, usar base de datos persistente, servidor web de producción y claves configuradas.
+- No incluye pagos, facturación fiscal, devoluciones, edición de productos ni integración con proveedores. Son próximos pasos, no funciones simuladas.
+
+## Licencia
+
+MIT. Chart.js conserva su licencia en `public/js/CHARTJS-LICENSE.md`.

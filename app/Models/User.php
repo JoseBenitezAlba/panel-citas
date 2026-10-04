@@ -34,9 +34,4 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
-
-    public function appointments(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Appointment::class);
-    }
 }

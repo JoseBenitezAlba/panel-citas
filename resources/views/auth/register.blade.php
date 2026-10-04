@@ -1,15 +1,3 @@
 @extends('layouts.app')
-@section('title', 'Registro')
-@section('content')
-<div class="card" style="max-width:420px;margin:auto">
-    <h2>Crear cuenta</h2>
-    <form method="post" action="{{ url('/registro') }}">
-        @csrf
-        <label>Nombre <input name="name" value="{{ old('name') }}" required></label>
-        <label>Email <input type="email" name="email" value="{{ old('email') }}" required></label>
-        <label>Contraseña <input type="password" name="password" required></label>
-        <label>Repite la contraseña <input type="password" name="password_confirmation" required></label>
-        <button class="btn">Registrarme</button>
-    </form>
-</div>
-@endsection
+@section('title','Crear cuenta')
+@section('content')<div class="auth-form" style="min-height:100vh"><div class="auth-box"><span class="eyebrow">STOCKIA · NUEVA CUENTA</span><h1>Empieza con lo esencial.</h1><p class="muted">Las cuentas nuevas tienen permisos de empleado.</p>@if($errors->any())<div class="alert error" role="alert">{{ $errors->first() }}</div>@endif<form method="POST" action="{{ route('register') }}">@csrf @foreach([['name','Nombre','text'],['email','Correo electrónico','email'],['password','Contraseña (mínimo 8 caracteres)','password'],['password_confirmation','Repite la contraseña','password']] as [$name,$label,$type])<div class="field"><label for="{{ $name }}">{{ $label }}</label><input id="{{ $name }}" name="{{ $name }}" type="{{ $type }}" value="{{ $type==='password' ? '' : old($name) }}" required @if($type==='password') minlength="8" @endif></div>@endforeach<button class="btn">Crear cuenta</button></form><p><a href="{{ route('login') }}">Volver al inicio de sesión</a></p></div></div>@endsection

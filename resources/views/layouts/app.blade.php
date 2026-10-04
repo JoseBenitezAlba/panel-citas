@@ -1,53 +1,10 @@
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Panel de citas')</title>
-    <style>
-        :root { --c:#2563eb; --bg:#f3f4f6; }
-        * { box-sizing: border-box; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; color: #111827; }
-        nav { background: #111827; padding: .8rem 1.5rem; display: flex; gap: 1rem; align-items: center; }
-        nav a, nav button { color: #e5e7eb; text-decoration: none; background: none; border: 0; font: inherit; cursor: pointer; }
-        nav .sp { flex: 1; }
-        main { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; }
-        .card { background: #fff; border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem; box-shadow: 0 1px 3px #0001; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: .5rem; border-bottom: 1px solid #e5e7eb; }
-        input, select, textarea { width: 100%; padding: .5rem; margin: .25rem 0 .8rem; border: 1px solid #d1d5db; border-radius: 6px; font: inherit; }
-        .btn { background: var(--c); color: #fff; border: 0; padding: .5rem 1rem; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block; font: inherit; }
-        .btn.sec { background: #6b7280; }
-        .ok { background: #dcfce7; padding: .6rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
-        .err { background: #fee2e2; padding: .6rem 1rem; border-radius: 6px; margin-bottom: 1rem; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-        .kpi { font-size: 2rem; font-weight: 700; }
-        .badge { padding: .1rem .5rem; border-radius: 99px; font-size: .8rem; background: #e5e7eb; }
-    </style>
-</head>
-<body>
-<nav>
-    <strong style="color:#fff">Panel de citas</strong>
-    @auth
-        <a href="{{ route('appointments.index') }}">Mis citas</a>
-        @if(auth()->user()->isAdmin())
-            <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-            <a href="{{ route('admin.appointments') }}">Todas las citas</a>
-            <a href="{{ route('admin.services') }}">Servicios</a>
-        @endif
-        <span class="sp"></span>
-        <span style="color:#9ca3af">{{ auth()->user()->name }}</span>
-        <form method="post" action="{{ route('logout') }}">@csrf <button>Salir</button></form>
-    @else
-        <span class="sp"></span>
-        <a href="{{ route('login') }}">Entrar</a>
-        <a href="{{ route('register') }}">Registrarse</a>
-    @endauth
-</nav>
-<main>
-    @if(session('status')) <div class="ok">{{ session('status') }}</div> @endif
-    @if($errors->any()) <div class="err">@foreach($errors->all() as $e) <div>{{ $e }}</div> @endforeach</div> @endif
-    @yield('content')
-</main>
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>@yield('title', 'Panel') · Stockia</title><link rel="stylesheet" href="{{ asset('css/inventory.css') }}"></head><body>
+@auth
+<div class="overlay" id="overlay"></div><aside class="sidebar" id="sidebar"><a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark">▥</span><span>stockia<small>GESTIÓN DE COMERCIO</small></span></a><div class="nav-label">ESPACIO DE TRABAJO</div><nav class="nav" aria-label="Menú principal">@foreach([['dashboard','◫','Vista general'],['products','▦','Productos'],['sales','↗','Ventas'],['movements','⇄','Movimientos']] as [$route,$icon,$label])<a href="{{ route($route) }}" class="{{ request()->routeIs($route) ? 'active' : '' }}" @if(request()->routeIs($route)) aria-current="page" @endif><span class="nav-icon" aria-hidden="true">{{ $icon }}</span>{{ $label }}</a>@endforeach</nav><div class="side-bottom"><p style="color:#a3adbf;font-size:12px">Todo tu negocio,<br>en un mismo lugar.</p><div class="profile"><span class="avatar">{{ mb_substr(auth()->user()->name,0,1) }}</span><div><strong>{{ auth()->user()->name }}</strong><small>{{ auth()->user()->isAdmin() ? 'Administrador' : 'Empleado' }}</small><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit">Cerrar sesión ↗</button></form></div></div></div></aside>
+<div class="workspace"><header class="topbar"><button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menú">☰</button><span class="mobile-brand">stockia</span><div class="crumb">Mi comercio / @yield('title', 'Vista general')</div><div class="top-right"><span class="demo-pill">● Entorno de demostración</span><span class="avatar">{{ mb_substr(auth()->user()->name,0,1) }}</span></div></header><main class="main">
+@if(session('success'))<div class="alert" role="status">{{ session('success') }}</div>@endif
+@if($errors->any())<div class="alert error" role="alert"><strong>Revisa estos datos antes de continuar.</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+@yield('content')<div class="footer-note"><span>Stockia · Control sin complicaciones</span><span>Datos de ejemplo. Sin pagos reales.</span></div></main></div>
+<script>document.querySelectorAll('table').forEach(table=>{const labels=Array.from(table.querySelectorAll('th'),th=>th.textContent);table.querySelectorAll('tbody tr').forEach(tr=>Array.from(tr.children).forEach((td,i)=>td.dataset.label=labels[i]||''))});const toggle=document.getElementById('menu-toggle'),side=document.getElementById('sidebar'),overlay=document.getElementById('overlay');function menu(open){side.classList.toggle('open',open);overlay.classList.toggle('open',open);toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'Cerrar menú':'Abrir menú')}toggle.addEventListener('click',()=>menu(!side.classList.contains('open')));overlay.addEventListener('click',()=>menu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')menu(false)});</script>
+@else @yield('content') @endauth
+@stack('scripts')</body></html>
