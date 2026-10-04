@@ -4,6 +4,8 @@
 ![PHP](https://img.shields.io/badge/PHP-8.4-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 
+**Demo:** https://panel-citas-v9zx.onrender.com (administrador `admin@example.com`, cliente `cliente@example.com`, contraseña `password`). Está en el plan gratuito de Render: si lleva un rato sin usarse, la primera carga tarda cerca de un minuto. Los datos se reinician en cada arranque.
+
 Aplicación web de gestión de citas hecha con **Laravel 13** y Blade. Los clientes piden y cancelan sus citas; los administradores gestionan servicios y estados y ven un dashboard con gráficas.
 
 ## Funcionalidades
