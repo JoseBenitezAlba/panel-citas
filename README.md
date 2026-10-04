@@ -17,7 +17,9 @@ Panel de inventario y ventas para pequeños comercios, construido con Laravel 13
 
 ## Demo
 
-La demo se publica tras fusionar el PR de Stockia. La URL del despliegue existente se actualizará cuando se complete el cambio de nombre del servicio.
+[Abrir demo de Stockia](https://panel-citas-v9zx.onrender.com/) · [Repositorio](https://github.com/JoseBenitezAlba/stockia)
+
+El servicio ya se llama Stockia; conserva la URL original de Render para no romper enlaces. La primera carga del plan gratuito puede tardar alrededor de un minuto.
 
 | Perfil | Correo | Contraseña |
 | --- | --- | --- |
