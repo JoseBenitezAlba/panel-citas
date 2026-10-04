@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('appointments.index'));
+        return redirect()->intended(route('dashboard'));
     }
 
     public function showRegister(): View
@@ -45,10 +45,11 @@ class AuthController extends Controller
         ]);
 
         $user = User::create($data);
+        $user->forceFill(['role' => 'empleado'])->save();
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('appointments.index');
+        return redirect()->route('dashboard');
     }
 
     public function logout(Request $request): RedirectResponse
